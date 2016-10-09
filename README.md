@@ -3,9 +3,9 @@
 qualpalr
 ========
 
-[![Build Status](https://travis-ci.org/jolars/qualpalr.svg?branch=master)](https://travis-ci.org/jolars/qualpalr) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jolars/qualpalr?branch=master&svg=true)](https://ci.appveyor.com/project/jolars/qualpalr) [![Coverage Status](https://codecov.io/github/jolars/qualpalr/coverage.svg?branch=master)](https://codecov.io/github/jolars/qualpalr?branch=master)
+[![Travis-CI Build Status](https://travis-ci.org/jolars/qualpalr.svg?branch=master)](https://travis-ci.org/jolars/qualpalr) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jolars/qualpalr?branch=master&svg=true)](https://ci.appveyor.com/project/jolars/qualpalr) [![Coverage Status](https://codecov.io/github/jolars/qualpalr/coverage.svg?branch=master)](https://codecov.io/github/jolars/qualpalr?branch=master) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/qualpalr)](https://cran.r-project.org/package=qualpalr)
 
-`qualpalr` generates distinct qualitative color palettes, primarily for use in R graphics. The user inputs `n` (the number of colors to generate), along with a subset in the [hls color space](https://en.wikipedia.org/wiki/HSL_and_HSV) (a cylindrical representation of the RGB color space). Using a [Nelder-Mead optimizer](https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method), `qualpalr` then attempts to find the `n` colors in the provided color subspace that *maximize the smallest pairwise color difference*, computed via the [CIEDE2000 color difference formula](https://en.wikipedia.org/wiki/Color_difference#CIEDE2000).
+`qualpalr` generates distinct qualitative color palettes, primarily for use in R graphics. Given `n` (the number of colors to generate), along with a subset in the [hsl color space](https://en.wikipedia.org/wiki/HSL_and_HSV) (a cylindrical representation of the RGB color space) `qualpalr` attempts to find the `n` colors in the provided color subspace that *maximize the smallest pairwise color difference*. This is done by projecting the color subset from the HSL color space to the DIN99d space. DIN99d is (approximately) perceptually uniform, that is, the euclidean distance between two colors in the space is proportional to their perceived difference.
 
 `qualpalr` was inspired by [i want hue](http://tools.medialab.sciences-po.fr/iwanthue/).
 
@@ -21,31 +21,40 @@ pal <- qualpal(n = 4, list(h = c(0, 360), s = c(0.1, 0.5), l = c(0.6, 0.85)))
 
 # Look at the colors in hex format
 pal$hex
-#> [1] "#CCC8C0" "#929FDB" "#66CC66" "#D58484"
+#> [1] "#6BCB69" "#C86DC5" "#77AACE" "#CF9D74"
 
 # Create a palette using one of the predefined color subspaces
-pal2 <- qualpal(n = 4, colorspace = "colorblind")
+pal2 <- qualpal(n = 4, colorspace = "pretty")
 
-# Produce a distance matrix of the CIEDE2000 color differences
-pal2$ciede2000
-#>          #CBC04E  #DEBCEC  #1A5E66
-#> #DEBCEC 50.92516                  
-#> #1A5E66 51.16246 50.51355         
-#> #932727 58.10369 50.39859 50.39859
+# Distance matrix of the DIN99d color differences
+pal2$de_DIN99d
+#>         #6ACB69 #C96CC6 #76AACE
+#> #C96CC6      30                
+#> #76AACE      21      21        
+#> #CF9D74      20      21      23
 ```
 
-Methods for `pairs()` and `plot()` exist for objects created with `qualpal()`.
+`pairs()` and `plot()` methods have been prepared for objects created with `qualpal`.
+
+``` r
+plot(pal)
+pairs(pal, colorspace = "hsl")
+```
 
 Installation
 ------------
+
+The current CRAN release can be installed by running
+
+``` r
+install.packages("qualpalr")
+```
 
 The development version can be installed by running
 
 ``` r
 devtools::install_github("jolars/qualpalr")
 ```
-
-A version for CRAN is being prepared.
 
 License
 -------

@@ -1,92 +1,224 @@
-# A vectorized version of the CIEDE2000 color difference formula ----------
+RGB_HSL <- function(RGB) {
+  R <- RGB[, 1]
+  G <- RGB[, 2]
+  B <- RGB[, 3]
 
-ciede2000 <- function(L1, a1, b1, L2, a2, b2, kL = 1, kH = 1, kC = 1) {
-  kL <- 1
-  kH <- 1
-  kC <- 1
+  M <- pmax(R, G, B)
+  m <- pmin(R, G, B)
+  C <- M - m
 
-  C1 <- sqrt(a1 ^ 2 + b1 ^ 2)
-  C2 <- sqrt(a2 ^ 2 + b2 ^ 2)
-  C <- (C1 + C2) / 2
-  G <- 0.5 * (1 - sqrt(C ^ 7  / (C ^ 7 + 25 ^ 7)))
+  i1 <- C == 0
+  i2 <- M == R & C > 0
+  i3 <- M == G & C > 0
+  i4 <- M == B & C > 0
 
-  a1prime <- (1 + G) * a1
-  a2prime <- (1 + G) * a2
+  Hprime <- double(length(R))
+  Hprime[i1] <- 0
+  Hprime[i2] <- ((G[i2] - B[i2]) / C[i2]) %% 6
+  Hprime[i3] <- (B[i3] - R[i3]) / C[i3] + 2
+  Hprime[i4] <- (R[i4] - G[i4]) / C[i4] + 4
 
-  C1prime <- sqrt(a1prime ^ 2 + b1 ^ 2)
-  C2prime <- sqrt(a2prime ^ 2 + b2 ^ 2)
+  H <- Hprime * 60
+  L <- (M + m) / 2
 
-  h1prime <- ifelse(b1 == 0 & a1prime == 0, 0, (atan2(b1, a1prime) * 180) / pi)
-  h2prime <- ifelse(b2 == 0 & a2prime == 0, 0, (atan2(b2, a2prime) * 180) / pi)
-  h1prime <- ifelse(h1prime < 0, h1prime + 360, h1prime)
-  h2prime <- ifelse(h2prime < 0, h2prime + 360, h2prime)
+  S <- double(length(R))
+  S[!i1] <- C[!i1] / (1 - abs(2 * L[!i1] - 1))
+  S[i1] <- 0
 
-  dL <- L2 - L1
-  dC <- C2prime - C1prime
-
-  dh <- ifelse(C1prime * C2prime == 0,
-               0,
-               ifelse(abs(h2prime - h1prime) <= 180,
-                      h2prime - h1prime,
-                      ifelse(h2prime - h1prime > 180,
-                             h2prime - h1prime - 360,
-                             h2prime - h1prime + 360)))
-
-  dH <- 2 * sqrt(C1prime * C2prime) * sinpi((dh / 2) / 180)
-
-  LBar <- (L1 + L2) / 2
-  CBar <- (C1prime + C2prime) / 2
-
-  hBar <- ifelse(C1prime * C2prime == 0,
-                 h1prime + h2prime,
-                 ifelse(abs(h1prime - h2prime) <= 180,
-                        (h1prime + h2prime) / 2,
-                        ifelse(h1prime + h2prime < 360,
-                               (h1prime + h2prime + 360) / 2,
-                               (h1prime + h2prime - 360) / 2)))
-
-  t <- 1 -
-       0.17 * cospi((hBar - 30) / 180) +
-       0.24 * cospi((2 * hBar) / 180) +
-       0.32 * cospi((3 * hBar + 6) / 180) -
-       0.20 * cospi((4 * hBar - 63) / 180)
-
-  dtheta <- 30 * exp(-((hBar - 275) / 25) ^ 2)
-  RC <- 2 * sqrt((CBar ^ 7) / ((CBar ^ 7) + 25 ^ 7))
-  SL <- 1 + (0.015 * ((LBar - 50) ^ 2)) / sqrt(20 + (LBar - 50) ^ 2)
-  SC <- 1 + 0.045 * CBar
-  SH <- 1 + 0.015 * CBar * t
-  RT <- - sinpi((2 * dtheta) / 180) * RC
-
-  sqrt((dL / (kL * SL)) ^ 2 +
-       (dC / (kC * SC)) ^ 2 +
-       (dH / (kH * SH)) ^ 2 +
-       (RT * (dC / (kC * SC)) * (dH / (kH * SH))))
+  cbind(H, S, L)
 }
 
-hsl_rgb <- function(HSL) {
-  H <- ifelse(HSL[1] < 0, HSL[1] + 360, HSL[1])
-  S <- HSL[2]
-  L <- HSL[3]
+HSL_RGB <- function(HSL) {
+  H <- HSL[, 1]
+  S <- HSL[, 2]
+  L <- HSL[, 3]
+
+  H[H < 0] <- H[H < 0] + 360
 
   C <- (1 - abs(2 * L - 1)) * S
   Hprime <- H / 60
   X <- C * (1 - abs(Hprime %% 2 - 1))
   m <- L - C / 2
 
-  if (Hprime < 1) {
-    c(C, X, 0) + m
-  } else if (Hprime < 2) {
-    c(X, C, 0) + m
-  } else if (Hprime < 3) {
-    c(0, C, X) + m
-  } else if (Hprime < 4) {
-    c(0, X, C) + m
-  } else if (Hprime < 5) {
-    c(X, 0, C) + m
-  } else if (Hprime < 6) {
-    c(C, 0, X) + m
-  } else {
-    c(0, 0, 0) + m
-  }
+  R <- G <- B <- double(length(H))
+
+  i1 <- Hprime >= 0 & Hprime < 1
+  i2 <- Hprime >= 1 & Hprime < 2
+  i3 <- Hprime >= 2 & Hprime < 3
+  i4 <- Hprime >= 3 & Hprime < 4
+  i5 <- Hprime >= 4 & Hprime < 5
+  i6 <- Hprime >= 5 & Hprime < 6
+
+  R[i1] <- C[i1]
+  R[i2] <- X[i2]
+  R[i3] <- 0
+  R[i4] <- 0
+  R[i5] <- X[i5]
+  R[i6] <- C[i6]
+
+  G[i1] <- X[i1]
+  G[i2] <- C[i2]
+  G[i3] <- C[i3]
+  G[i4] <- X[i4]
+  G[i5] <- 0
+  G[i6] <- 0
+
+  B[i1] <- 0
+  B[i2] <- 0
+  B[i3] <- X[i3]
+  B[i4] <- C[i4]
+  B[i5] <- C[i5]
+  B[i6] <- X[i6]
+
+  cbind(R, G, B) + m
+}
+
+XYZ_DIN99d <- function(XYZ, Xr = 0.95047, Yr = 1, Zr = 1.08883) {
+  XYZ[, 1] <- 1.12 * XYZ[, 1] - 0.12 * XYZ[, 3]
+
+  Lab <- XYZ_Lab(XYZ, Xr = Xr, Yr = Yr, Zr = Zr)
+
+  L <- Lab[, 1]
+  a <- Lab[, 2]
+  b <- Lab[, 3]
+
+  u <- 50 * pi / 180
+
+  L99d <- 325.22 * log(1 + 0.0036 * L)
+  e    <- a * cos(u) + b * sin(u)
+  f    <- 1.14 * (b * cos(u) - a * sin(u))
+  G    <- sqrt(e ^ 2 + f ^ 2)
+  C99d <- 22.5 * log(1 + 0.06 * G)
+  h99d <- atan2(f, e) + 50 * pi / 180
+  a99d <- C99d * cos(h99d)
+  b99d <- C99d * sin(h99d)
+
+  cbind(L99d, a99d, b99d)
+}
+
+sRGB_XYZ <- function(sRGB) {
+  ind <- sRGB > 0.04045
+
+  sRGB[!ind] <- sRGB[!ind] / 12.92
+  sRGB[ind]  <- ((sRGB[ind] + 0.055) / (1.055)) ^ 2.4
+  sRGB <- matrix(sRGB, ncol = 3)
+
+  t(rbind(c(0.4124564, 0.3575761, 0.1804375),
+          c(0.2126729, 0.7151522, 0.0721750),
+          c(0.0193339, 0.1191920, 0.9503041)) %*% t(sRGB))
+}
+
+XYZ_sRGB <- function(XYZ) {
+  sRGB <- t(solve(rbind(c(0.4124564, 0.3575761, 0.1804375),
+                        c(0.2126729, 0.7151522, 0.0721750),
+                        c(0.0193339, 0.1191920, 0.9503041))) %*% t(XYZ))
+
+  ind <- sRGB > 0.0031308
+
+  sRGB[!ind] <- 12.92 * sRGB[!ind]
+  sRGB[ind]  <- 1.055 * sRGB[ind] ^ (1 / 2.4) - 0.055
+  matrix(sRGB, ncol = 3)
+}
+
+XYZ_Lab <- function(XYZ, Xr = 0.95047, Yr = 1, Zr = 1.08883) {
+  X <- XYZ[, 1]
+  Y <- XYZ[, 2]
+  Z <- XYZ[, 3]
+
+  epsilon <- 216 / 24389
+  kelvin  <- 24389 / 27
+
+  xr <- X / Xr
+  yr <- Y / Yr
+  zr <- Z / Zr
+
+  ix <- xr > epsilon
+  iy <- yr > epsilon
+  iz <- zr > epsilon
+
+  fx <- fy <- fz <- double(length(xr))
+  fx[ix]  <- xr[ix] ^ (1 / 3)
+  fx[!ix] <- (xr[!ix] * kelvin + 16) / 116
+
+  fy[iy]  <- yr[iy] ^ (1 / 3)
+  fy[!iy] <- (yr[!iy] * kelvin + 16) / 116
+
+  fz[iz]  <- zr[iz] ^ (1 / 3)
+  fz[!iz] <- (zr[!iz] * kelvin + 16) / 116
+
+  L <- 116 *  fy - 16
+  a <- 500 * (fx - fy)
+  b <- 200 * (fy - fz)
+
+  cbind(L, a, b)
+}
+
+Lab_XYZ <- function(Lab, Xr = 0.95047, Yr = 1, Zr = 1.08883) {
+  L <- Lab[, 1]
+  a <- Lab[, 2]
+  b <- Lab[, 3]
+
+  epsilon <- 216 / 24389
+  kelvin  <- 24389 / 27
+
+  fy <- (L + 16) / 116
+  fx <- a / 500 + fy
+  fz <- fy - b / 200
+
+  ix <- fx ^ 3 > epsilon
+  iy <-      L > kelvin * epsilon
+  iz <- fz ^ 3 > epsilon
+
+  xr <- yr <- zr <- double(length(L))
+
+  xr[ix]  <- fx[ix] ^ 3
+  xr[!ix] <- (116 * fx[!ix] - 16) / kelvin
+
+  yr[iy]  <- ((L[iy] + 16) / 116) ^ 3
+  yr[!iy] <- L[!iy] / kelvin
+
+  zr[iz]  <- fz[iz] ^ 3
+  zr[!iz] <- (116 * fz[!iz] - 16) / kelvin
+
+  X <- Xr * xr
+  Y <- Yr * yr
+  Z <- Zr * zr
+
+  cbind(X, Y, Z)
+}
+
+XYZ_LMS <- function(XYZ) {
+  t(rbind(c(  0.15514, 0.54312, - 0.03286),
+          c(- 0.15514, 0.45684,   0.03286),
+          c(        0,       0,   0.01608)) %*% t(XYZ))
+}
+
+LMS_XYZ <- function(LMS) {
+  t(solve(rbind(c(  0.15514, 0.54312, - 0.03286),
+                c(- 0.15514, 0.45684,   0.03286),
+                c(        0,       0,   0.01608))) %*% t(LMS))
+}
+
+LMS_protan <- function(LMS) {
+  t(rbind(c(0, 2.02344, - 2.52581),
+          c(0,       1,         0),
+          c(0,       0,         1)) %*% t(LMS))
+}
+
+LMS_deutan <- function(LMS) {
+  t(rbind(c(1,        0,       0),
+          c(0.494207, 0, 1.24827),
+          c(0,        0,       1)) %*% t(LMS))
+}
+
+RGB_LMS <- function(RGB) {
+  t(rbind(c(  17.8824, 43.5161,  4.11935),
+          c(  3.45565, 27.1554,  3.86714),
+          c(0.0299566, 0.184309, 1.46709)) %*% t(RGB))
+}
+
+LMS_RGB <- function(LMS) {
+  t(solve(rbind(c(  17.8824, 43.5161,  4.11935),
+                c(  3.45565, 27.1554,  3.86714),
+                c(0.0299566, 0.184309, 1.46709))) %*% t(LMS))
 }

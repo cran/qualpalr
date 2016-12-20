@@ -1,3 +1,28 @@
+# qualpalr 0.3.0
+## New features
+* Improved algorithm for finding distinct colors. (For details
+[see this](http://larssonjohan.com/r/farthest-points/).)
+* Revamped the color deficiency handling to include almost all cases of color
+deficiency using the methods described in
+[Machado 2010](https://www.lume.ufrgs.br/bitstream/handle/10183/26950/000761444.pdf), 
+now including tritanopia as well as anomalous trichromacies (deuteranomaly,
+tritanomaly, and protanomaly). This is controlled via the `cvd_severity`
+argument to `qualpal()` that allows the user to set the severity of color
+deficiency to adapt to -- `0` for normal vision and `1` for dichromatic vision
+(protanopia, deuteranopia, or tritanopia).
+
+## Minor improvements
+* Distance and color picking algorithms have been rewritten in C++ using Rcpp,
+RcppParallel, and RcppArmadillo.
+* Phased out the `...` argument to `qualpal`.
+* Lightness range of the predefined rainbow palette increased to [0, 1].
+* Changed argument name of `colorblind` to `cvd` (for color vision deficiency)
+since the function now adapts to less severe versions of color deficiency. Using
+`colorblind` is deprecated and will throw a warning.
+
+## Bug fixes
+* Fixed typos and invalid links in the _Introduction to qualpalr_ vignette.
+
 # qualpalr 0.2.1
 ## New features
 * Dropped daltonization since it effectively transposed the color

@@ -21,17 +21,18 @@ pal <- qualpal(n = 4, list(h = c(0, 360), s = c(0.1, 0.5), l = c(0.6, 0.85)))
 
 # Look at the colors in hex format
 pal$hex
-#> [1] "#6BCB69" "#C86DC5" "#77AACE" "#CF9D74"
+#> [1] "#C072C9" "#6FCB6F" "#78A7CA" "#D1AC97"
 
-# Create a palette using one of the predefined color subspaces
-pal2 <- qualpal(n = 4, colorspace = "pretty")
+# Create a palette using one of the predefined color subspaces, adapted to color
+# vision deficiency
+pal2 <- qualpal(n = 4, colorspace = "pretty", cvd = "deutan", cvd_severity = 0.5)
 
 # Distance matrix of the DIN99d color differences
 pal2$de_DIN99d
-#>         #6ACB69 #C96CC6 #76AACE
-#> #C96CC6      30                
-#> #76AACE      21      21        
-#> #CF9D74      20      21      23
+#>    1  2  3
+#> 2 19      
+#> 3 20 20   
+#> 4 28 19 18
 ```
 
 `pairs()` and `plot()` methods have been prepared for objects created with `qualpal`.
@@ -56,7 +57,17 @@ The development version can be installed by running
 devtools::install_github("jolars/qualpalr")
 ```
 
+Versioning
+----------
+
+Versioning is based on [semantic versioning](http://semver.org/).
+
+Code of conduct
+---------------
+
+Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
+
 License
 -------
 
-`qualpalr` is open source software, licensed under GPL-3.
+`qualpalr` is open source software, licensed under [GPL-3](LICENSE).

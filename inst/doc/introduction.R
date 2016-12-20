@@ -5,8 +5,8 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(qualpalr)
 pal <- qualpal(n = 5, list(h = c(0, 360), s = c(0.4, 0.6), l = c(0.5, 0.85)))
 
-# Adapt the color space to deuteranopia
-pal <- qualpal(n = 5, colorspace = "pretty", colorblind = "deutan")
+# Adapt the color space to deuteranomaly of severity 0.7
+pal <- qualpal(n = 5, colorspace = "pretty", cvd = "deutan", cvd_severity = 0.7)
 
 ## ----qualpal_list--------------------------------------------------------
 pal

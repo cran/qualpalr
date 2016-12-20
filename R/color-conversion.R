@@ -101,7 +101,7 @@ sRGB_XYZ <- function(sRGB) {
 
   sRGB[!ind] <- sRGB[!ind] / 12.92
   sRGB[ind]  <- ((sRGB[ind] + 0.055) / (1.055)) ^ 2.4
-  sRGB <- matrix(sRGB, ncol = 3)
+  sRGB       <- matrix(sRGB, ncol = 3)
 
   t(rbind(c(0.4124564, 0.3575761, 0.1804375),
           c(0.2126729, 0.7151522, 0.0721750),
@@ -197,28 +197,4 @@ LMS_XYZ <- function(LMS) {
   t(solve(rbind(c(  0.15514, 0.54312, - 0.03286),
                 c(- 0.15514, 0.45684,   0.03286),
                 c(        0,       0,   0.01608))) %*% t(LMS))
-}
-
-LMS_protan <- function(LMS) {
-  t(rbind(c(0, 2.02344, - 2.52581),
-          c(0,       1,         0),
-          c(0,       0,         1)) %*% t(LMS))
-}
-
-LMS_deutan <- function(LMS) {
-  t(rbind(c(1,        0,       0),
-          c(0.494207, 0, 1.24827),
-          c(0,        0,       1)) %*% t(LMS))
-}
-
-RGB_LMS <- function(RGB) {
-  t(rbind(c(  17.8824, 43.5161,  4.11935),
-          c(  3.45565, 27.1554,  3.86714),
-          c(0.0299566, 0.184309, 1.46709)) %*% t(RGB))
-}
-
-LMS_RGB <- function(LMS) {
-  t(solve(rbind(c(  17.8824, 43.5161,  4.11935),
-                c(  3.45565, 27.1554,  3.86714),
-                c(0.0299566, 0.184309, 1.46709))) %*% t(LMS))
 }

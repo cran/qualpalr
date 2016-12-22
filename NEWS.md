@@ -1,3 +1,11 @@
+# qualpalr 0.3.1
+
+## Bug fixes
+* Dropped a C++ header that caused the package build to fail
+on some platforms.
+* Fixed issues with unitialized variables in the internal farthest points
+optimizer.
+
 # qualpalr 0.3.0
 ## New features
 * Improved algorithm for finding distinct colors. (For details

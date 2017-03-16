@@ -1,5 +1,18 @@
-# qualpalr 0.3.1
+# qualpalr 0.4.0
+## Major changes
+* `autopal()` is a new function that tweaks the amount of color vision
+deficiency adapation to match a target color difference.
+* `qualpal()` argument `colorspace` now also accepts a `matrix` or 
+`data.frame` of RGB colors.
 
+## Minor  changes
+* `qualpal()` sorts palettes in order of increasing color distinctness.
+* `qualpal()` argument `colorblind` has been made defunct.
+* Documentation for `qualpal()` has been improved.
+* Colors are now generated with `randtoolbox::torus()` instead of
+`randtoolbox::sobol()`.
+
+# qualpalr 0.3.1
 ## Bug fixes
 * Dropped a C++ header that caused the package build to fail
 on some platforms.

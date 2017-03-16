@@ -12,35 +12,53 @@ qualpalr
 Usage
 -----
 
+Let's create a palette of 4 colors of hues from 0 to 360, saturation between 0.1 and 0.5, and lightness from 0.6 to 0.85.
+
 ``` r
 library(qualpalr)
 
-# Create a palette of 4 colors of hues from 0 to 360, saturations between
-# 0.1 and 0.5, and lightness from 0.6 to 0.85
 pal <- qualpal(n = 4, list(h = c(0, 360), s = c(0.1, 0.5), l = c(0.6, 0.85)))
-
-# Look at the colors in hex format
-pal$hex
-#> [1] "#C072C9" "#6FCB6F" "#78A7CA" "#D1AC97"
-
-# Create a palette using one of the predefined color subspaces, adapted to color
-# vision deficiency
-pal2 <- qualpal(n = 4, colorspace = "pretty", cvd = "deutan", cvd_severity = 0.5)
-
-# Distance matrix of the DIN99d color differences
-pal2$de_DIN99d
-#>    1  2  3
-#> 2 19      
-#> 3 20 20   
-#> 4 28 19 18
 ```
 
-`pairs()` and `plot()` methods have been prepared for objects created with `qualpal`.
+We can retrieve the generated colors in hex format
 
 ``` r
-plot(pal)
-pairs(pal, colorspace = "hsl")
+pal$hex
+#> [1] "#92CB72" "#B56CCB" "#79AED0" "#D0937E"
 ```
+
+Altneratively, we can create a palette using one of the predefined color subspaces and, optionally, adapt it to color deficiency (here *deuteranomaly*).
+
+``` r
+pal2 <- qualpal(n = 4, colorspace = "pretty", cvd = "deutan",
+                cvd_severity = 0.5)
+```
+
+We can look at a distance matrix of the pairwise color differences from the palette we have generated.
+
+``` r
+pal2$de_DIN99d
+#>          #D4C76F  #616FC8  #D0E0E8
+#> #616FC8 29.14409                  
+#> #D0E0E8 18.78602 21.76547         
+#> #A08587 18.59491 18.38472 18.34490
+```
+
+The palette may also be plotted with in a multidimensional scaling plot generated from the distance matrix of the colors in the palette.
+
+``` r
+plot(pal2)
+```
+
+![](tools/README-plot-1.png)
+
+Or it might be plotted in one of the provided color spaces as a scatterplot matrix.
+
+``` r
+pairs(pal2, colorspace = "HSL")
+```
+
+![](tools/README-pairs-1.png)
 
 Installation
 ------------

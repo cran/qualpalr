@@ -1,3 +1,11 @@
+# qualpalr 0.4.1
+## Bug fixes
+* Fixed `autopal()` which was broken since the minimum color difference
+returned was always 0 due to a bug in `qualpal()`.
+
+## Minor changes
+* Now registers compiled functions.
+
 # qualpalr 0.4.0
 ## Major changes
 * `autopal()` is a new function that tweaks the amount of color vision

@@ -8,7 +8,7 @@
 #' The function takes a color subspace in the HSL color space, where lightness
 #' and saturation take values from 0 to 1. Hue take values from -360 to 360,
 #' although negative values are brought to lie in the range \{0, 360\}; this
-#' behavior exists to enable color subspaces that span all hues being tha the
+#' behavior exists to enable color subspaces that span all hues being that the
 #' hue space is circular.
 #'
 #' The HSL color subspace that the user provides is projected into the DIN99d
@@ -25,7 +25,7 @@
 #' range without changing any of the colors.
 #'
 #' Optionally, \code{qualpal} can adapt palettes to cater to color vision
-#' defiency (cvd). This is accomplished by taking the colors
+#' deficiency (cvd). This is accomplished by taking the colors
 #' provided by the user and transforming them to colors that someone with cvd
 #' would see, that is, simulating cvd. qualpal then chooses colors from
 #' these new colors.
@@ -74,7 +74,7 @@
 #'   }
 #'
 #' @param cvd Color vision deficiency adaptation. Use \code{cvd_severity}
-#'   to set the severity of color vision deficiency to adapt to. Permissable
+#'   to set the severity of color vision deficiency to adapt to. Permissible
 #'   values are \code{"protan", "deutan",} and \code{"tritan"}.
 #' @param cvd_severity Severity of color vision deficiency to adapt to. Can take
 #'   any value from 0, for normal vision (the default), and 1, for dichromatic
@@ -91,7 +91,7 @@
 #'   \item{RGB}{
 #'     A matrix of the colors in the sRGB color space.} \item{hex}{A
 #'     character vector of the colors in hex notation.} \item{de_DIN99d}{A
-#'     distance matrix of color differenes according to delta E DIN99d.
+#'     distance matrix of color differences according to delta E DIN99d.
 #'   }
 #'   \item{min_de_DIN99d}{
 #'     The smallest pairwise DIN99d color difference.
@@ -118,14 +118,16 @@
 #' }
 #'
 #' @export
-qualpal <- function(n, colorspace = "pretty",
+qualpal <- function(n,
+                    colorspace = "pretty",
                     cvd = c("protan", "deutan", "tritan"),
                     cvd_severity = 0) {
   UseMethod("qualpal", colorspace)
 }
 
 #' @export
-qualpal.matrix <- function(n, colorspace,
+qualpal.matrix <- function(n,
+                           colorspace,
                            cvd = c("protan", "deutan", "tritan"),
                            cvd_severity = 0) {
   assertthat::assert_that(
@@ -166,6 +168,7 @@ qualpal.matrix <- function(n, colorspace,
 
   col_diff           <- edist(DIN99d)
   dimnames(col_diff) <- list(hex, hex)
+  de_DIN99d <- stats::as.dist(col_diff)
 
   structure(
     list(
@@ -173,8 +176,8 @@ qualpal.matrix <- function(n, colorspace,
       RGB           = RGB,
       DIN99d        = DIN99d,
       hex           = hex,
-      de_DIN99d     = stats::as.dist(col_diff),
-      min_de_DIN99d = min(col_diff)
+      de_DIN99d     = de_DIN99d,
+      min_de_DIN99d = min(de_DIN99d)
     ),
     class = c("qualpal", "list")
   )
@@ -185,7 +188,6 @@ qualpal.data.frame <- function(n, colorspace,
                                cvd = c("protan", "deutan", "tritan"),
                                cvd_severity = 0) {
   mat <- data.matrix(colorspace)
-
   qualpal(n = n, colorspace = mat, cvd = cvd, cvd_severity = cvd_severity)
 }
 
@@ -196,9 +198,7 @@ qualpal.character <- function(n, colorspace = "pretty",
   assertthat::assert_that(
     assertthat::is.string(colorspace)
   )
-
   colorspace <- predefined_colorspaces(colorspace)
-
   qualpal(n = n, colorspace = colorspace, cvd = cvd,
           cvd_severity = cvd_severity)
 }
@@ -268,7 +268,9 @@ qualpal.list <- function(n, colorspace,
 #' @examples
 #' f <- qualpal(3)
 #' print(f, colorspace = "DIN99d", digits = 3)
-print.qualpal <- function(x, colorspace = c("HSL", "DIN99d", "RGB"), digits = 2,
+print.qualpal <- function(x,
+                          colorspace = c("HSL", "DIN99d", "RGB"),
+                          digits = 2,
                           ...) {
   vsep <- strrep("-", 0.5 * getOption("width"))
 

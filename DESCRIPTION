@@ -1,6 +1,6 @@
 Package: qualpalr
 Title: Automatic Generation of Qualitative Color Palettes
-Version: 0.4.0
+Version: 0.4.1
 Authors@R: person("Johan", "Larsson", email = "johanlarsson@outlook.com",
                   role = c("aut", "cre"))
 Description: Automatic generation of distinct qualitative color palettes,
@@ -8,8 +8,8 @@ Description: Automatic generation of distinct qualitative color palettes,
     space as input and projects it to the DIN99d color space where it selects
     and return colors that are maximally distinct.
 Depends: R (>= 3.3.1)
-Imports: randtoolbox (>= 1.17), graphics, stats, grDevices, assertthat,
-        Rcpp, RcppParallel
+Imports: randtoolbox (>= 1.17), graphics, stats, grDevices, utils,
+        assertthat, Rcpp, RcppParallel
 Suggests: testthat, knitr, maps, rmarkdown, rgl
 License: GPL-3
 Encoding: UTF-8
@@ -22,8 +22,8 @@ LinkingTo: Rcpp (>= 0.12.9), RcppParallel (>= 4.3.20), RcppArmadillo
         (>= 0.7.600.0.0)
 SystemRequirements: GNU make
 NeedsCompilation: yes
-Packaged: 2017-03-16 13:15:23 UTC; johan
+Packaged: 2017-05-15 06:13:11 UTC; johan
 Author: Johan Larsson [aut, cre]
 Maintainer: Johan Larsson <johanlarsson@outlook.com>
 Repository: CRAN
-Date/Publication: 2017-03-16 13:47:48 UTC
+Date/Publication: 2017-05-15 07:17:15 UTC

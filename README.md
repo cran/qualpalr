@@ -24,7 +24,7 @@ We can retrieve the generated colors in hex format
 
 ``` r
 pal$hex
-#> [1] "#6ECC76" "#C96AC1" "#B6C9E5" "#CB9B6B"
+#> [1] "#74C970" "#766AC9" "#C86D6A" "#DCCFE0"
 ```
 
 Altneratively, we can create a palette using one of the predefined color subspaces and, optionally, adapt it to color deficiency (here *deuteranomaly*).

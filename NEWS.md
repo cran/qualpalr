@@ -1,3 +1,12 @@
+# qualpalr 0.4.3
+
+## Minor changes
+* `qualpal()` gains an argument, `n_threads`, for specifying the number
+of threads to use when computing the distance matrix between colors.
+* C++ functions call namespaces explicitly using `::`.
+* Documentation for hue and saturation in `qualpal()` has been fixed. 
+  (Closes #2, thanks @jflycn).
+
 # qualpalr 0.4.2
 
 ## Major changes
@@ -43,7 +52,7 @@ optimizer.
 # qualpalr 0.3.0
 ## New features
 * Improved algorithm for finding distinct colors. (For details
-[see this](http://larssonjohan.com/r/farthest-points/).)
+[see this](https://larssonjohan.com/post/2016-10-30-farthest-points/).)
 * Revamped the color deficiency handling to include almost all cases of color
 deficiency using the methods described in
 [Machado 2010](https://www.lume.ufrgs.br/bitstream/handle/10183/26950/000761444.pdf), 

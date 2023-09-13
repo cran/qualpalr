@@ -3,13 +3,13 @@
 
 # qualpalr
 
-[![Travis-CI Build
-Status](https://travis-ci.org/jolars/qualpalr.svg?branch=master)](https://travis-ci.org/jolars/qualpalr)
-[![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/jolars/qualpalr?branch=master&svg=true)](https://ci.appveyor.com/project/jolars/qualpalr)
-[![Coverage
-Status](https://codecov.io/github/jolars/qualpalr/coverage.svg?branch=master)](https://codecov.io/github/jolars/qualpalr?branch=master)
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/qualpalr)](https://cran.r-project.org/package=qualpalr)
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/jolars/qualpalr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jolars/qualpalr/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/jolars/qualpalr/branch/master/graph/badge.svg)](https://app.codecov.io/gh/jolars/qualpalr?branch=master)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/qualpalr)](https://cran.r-project.org/package=qualpalr)
+<!-- badges: end -->
 
 `qualpalr` generates distinct qualitative color palettes, primarily for
 use in R graphics. Given `n` (the number of colors to generate), along
@@ -23,7 +23,7 @@ perceptually uniform, that is, the euclidean distance between two colors
 in the space is proportional to their perceived difference.
 
 `qualpalr` was inspired by [i want
-hue](http://tools.medialab.sciences-po.fr/iwanthue/).
+hue](http://medialab.github.io/iwanthue/).
 
 ## Usage
 
@@ -43,13 +43,17 @@ pal$hex
 #> [1] "#74C970" "#766AC9" "#C86D6A" "#DCCFE0"
 ```
 
-Altneratively, we can create a palette using one of the predefined color
+Alternatively, we can create a palette using one of the predefined color
 subspaces and, optionally, adapt it to color deficiency (here
 *deuteranomaly*).
 
 ``` r
-pal2 <- qualpal(n = 4, colorspace = "pretty", cvd = "deutan",
-                cvd_severity = 0.5)
+pal2 <- qualpal(
+  n = 4,
+  colorspace = "pretty",
+  cvd = "deutan",
+  cvd_severity = 0.5
+)
 ```
 
 We can look at a distance matrix of the pairwise color differences from
@@ -97,14 +101,15 @@ devtools::install_github("jolars/qualpalr")
 
 ## Versioning
 
-Versioning is based on [semantic versioning](http://semver.org/).
+Versioning is based on [semantic versioning](https://semver.org/).
 
 ## Code of conduct
 
 Please note that this project is released with a [Contributor Code of
-Conduct](CONDUCT.md). By participating in this project you agree to
-abide by its terms.
+Conduct](https://github.com/jolars/qualpalr/blob/master/CONDUCT.md). By
+participating in this project you agree to abide by its terms.
 
 ## License
 
-`qualpalr` is open source software, licensed under [GPL-3](LICENSE).
+`qualpalr` is open source software, licensed under
+[GPL-3](https://github.com/jolars/qualpalr/blob/master/LICENSE).

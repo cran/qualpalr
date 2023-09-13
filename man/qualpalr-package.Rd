@@ -6,21 +6,18 @@
 \alias{qualpalr-package}
 \title{qualpalr: Automatic Generation of Qualitative Color Palettes}
 \description{
-Automatic generation of distinct qualitative color palettes,
-    optionally adapted to color deficiency. It takes a subspace of the HSL color
-    space as input and projects it to the DIN99d color space where it selects
-    and return colors that are maximally distinct.
+Automatic generation of maximally distinct qualitative color palettes, optionally tailored to color deficiency. A list of colors or a subspace of a color space is used as input and then projected to the DIN99d color space, where colors that are maximally distinct are chosen algorithmically.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/jolars/qualpalr}
+  \item \url{https://jolars.github.io/qualpalr/}
   \item Report bugs at \url{https://github.com/jolars/qualpalr/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: Johan Larsson \email{mail@larssonjohan.com} (0000-0002-4029-5945)
+\strong{Maintainer}: Johan Larsson \email{johanlarsson@outlook.com} (\href{https://orcid.org/0000-0002-4029-5945}{ORCID})
 
 }
 \keyword{internal}

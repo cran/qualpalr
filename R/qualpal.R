@@ -79,8 +79,8 @@
 #' @param cvd_severity Severity of color vision deficiency to adapt to. Can take
 #'   any value from 0, for normal vision (the default), and 1, for dichromatic
 #'   vision.
-#' @param n_threads The number of threads to use, provided to
-#' \link[RcppParallel]{setThreadOptions} if non-null.
+#' @param n_threads Previously the number of threads to use, but this argument
+#'   is now deprecated.
 #'
 #' @return A list of class \code{qualpal} with the following
 #'   components.
@@ -125,7 +125,13 @@ qualpal <- function(n,
                     colorspace = "pretty",
                     cvd = c("protan", "deutan", "tritan"),
                     cvd_severity = 0,
-                    n_threads = NULL) {
+                    n_threads) {
+  if (!missing(n_threads)) {
+    warning(
+      "`n_threads` is deprecated and no longer has any effet. It will be",
+      "made defunct in the next major release."
+    )
+  }
   UseMethod("qualpal", colorspace)
 }
 
@@ -134,7 +140,7 @@ qualpal.matrix <- function(n,
                            colorspace,
                            cvd = c("protan", "deutan", "tritan"),
                            cvd_severity = 0,
-                           n_threads = NULL) {
+                           n_threads) {
   assertthat::assert_that(
     assertthat::is.count(n),
     is.character(cvd),
@@ -149,11 +155,6 @@ qualpal.matrix <- function(n,
     ncol(colorspace) == 3
   )
 
-  if (!is.null(n_threads)) {
-    RcppParallel::setThreadOptions(numThreads = n_threads)
-    on.exit(RcppParallel::defaultNumThreads())
-  }
-
   RGB <- colorspace
   HSL <- RGB_HSL(RGB)
 
@@ -162,21 +163,21 @@ qualpal.matrix <- function(n,
     RGB <- sRGB_CVD(RGB, cvd = match.arg(cvd), cvd_severity = cvd_severity)
   }
 
-  XYZ    <- sRGB_XYZ(RGB)
+  XYZ <- sRGB_XYZ(RGB)
   DIN99d <- XYZ_DIN99d(XYZ)
 
   col_ind <- farthest_points(DIN99d, n)
 
-  RGB    <- RGB[col_ind, ]
-  HSL    <- HSL[col_ind, ]
+  RGB <- RGB[col_ind, ]
+  HSL <- HSL[col_ind, ]
   DIN99d <- DIN99d[col_ind, ]
-  hex    <- grDevices::rgb(RGB)
+  hex <- grDevices::rgb(RGB)
 
-  dimnames(HSL)    <- list(hex, c("Hue", "Saturation", "Lightness"))
+  dimnames(HSL) <- list(hex, c("Hue", "Saturation", "Lightness"))
   dimnames(DIN99d) <- list(hex, c("L(99d)", "a(99d)", "b(99d)"))
-  dimnames(RGB)    <- list(hex, c("Red", "Green", "Blue"))
+  dimnames(RGB) <- list(hex, c("Red", "Green", "Blue"))
 
-  col_diff           <- edist(DIN99d)
+  col_diff <- edist(DIN99d)
   dimnames(col_diff) <- list(hex, hex)
   de_DIN99d <- stats::as.dist(col_diff)
 
@@ -197,7 +198,7 @@ qualpal.matrix <- function(n,
 qualpal.data.frame <- function(n, colorspace,
                                cvd = c("protan", "deutan", "tritan"),
                                cvd_severity = 0,
-                               n_threads = NULL) {
+                               n_threads) {
   mat <- data.matrix(colorspace)
   qualpal(n = n, colorspace = mat, cvd = cvd, cvd_severity = cvd_severity)
 }
@@ -206,13 +207,15 @@ qualpal.data.frame <- function(n, colorspace,
 qualpal.character <- function(n, colorspace = "pretty",
                               cvd = c("protan", "deutan", "tritan"),
                               cvd_severity = 0,
-                              n_threads = NULL) {
+                              n_threads) {
   assertthat::assert_that(
     assertthat::is.string(colorspace)
   )
   colorspace <- predefined_colorspaces(colorspace)
-  qualpal(n = n, colorspace = colorspace, cvd = cvd,
-          cvd_severity = cvd_severity)
+  qualpal(
+    n = n, colorspace = colorspace, cvd = cvd,
+    cvd_severity = cvd_severity
+  )
 }
 
 
@@ -220,7 +223,7 @@ qualpal.character <- function(n, colorspace = "pretty",
 qualpal.list <- function(n, colorspace,
                          cvd = c("protan", "deutan", "tritan"),
                          cvd_severity = 0,
-                         n_threads = NULL) {
+                         n_threads) {
   assertthat::assert_that(
     assertthat::has_attr(colorspace, "names"),
     "h" %in% names(colorspace),
@@ -304,7 +307,7 @@ predefined_colorspaces <- function(colorspace) {
   spaces <- list(
     pretty      = list(h = c(0, 360), s = c(0.2, 0.5), l = c(0.6, 0.85)),
     pretty_dark = list(h = c(0, 360), s = c(0.1, 0.5), l = c(0.2, 0.4)),
-    rainbow     = list(h = c(0, 360), s = c(0,   1),   l = c(0,   1)),
+    rainbow     = list(h = c(0, 360), s = c(0, 1), l = c(0, 1)),
     pastels     = list(h = c(0, 360), s = c(0.2, 0.4), l = c(0.8, 0.9))
   )
 
@@ -312,5 +315,3 @@ predefined_colorspaces <- function(colorspace) {
 
   spaces[[colorspace]]
 }
-
-

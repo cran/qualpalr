@@ -1,5 +1,8 @@
 #' Optimize color palette for color vision deficiency
 #'
+#' **Deprecated**: This function is deprecated and will be removed in a future
+#' release. There is no direct replacement.
+#'
 #' This function adapts color palettes to color vision deficiency (CVD) by
 #' optimizing the CVD severity to try reach a target color difference (DIN99d
 #' \eqn{\delta E}) of the user's choosing. Basically, it will choose a color
@@ -24,31 +27,53 @@
 #' @param cvd Color vision deficiency adaptation to adapt the color palette to.
 #' @param target Target color difference.
 #'
+#' @name autopal-deprecated
 #' @inherit qualpal return
+#' @keywords internal
+#' @seealso \code{\link{qualpal-deprecated}}
+NULL
+
+#' Optimize color palette for color vision deficiency
+#'
+#' @rdname qualpal-deprecated
+#' @section \code{autopal}:
+#' This function is deprecated and will be removed in a future release.
+#' No direct replacement is available.
 #' @export
-#'
-#' @examples
-#' pal <- autopal(3, cvd = "protan", target = 15)
-#' plot(pal)
-#'
-autopal <- function(n,
-                    colorspace = "pretty",
-                    cvd = c("protan", "deutan", "tritan"),
-                    target = 20) {
-  assertthat::assert_that(
-    assertthat::is.number(target),
-    assertthat::is.count(n),
+autopal <- function(
+  n,
+  colorspace = list(h = c(0, 360), s = c(0.2, 0.5), l = c(0.6, 0.85)),
+  cvd = c("protan", "deutan", "tritan"),
+  target = 20
+) {
+  .Deprecated(new = NULL, old = "autopal")
+
+  cvd <- match.arg(cvd)
+
+  stopifnot(
+    is.numeric(target) && length(target) == 1,
+    n > 0 && length(n) == 1 && is.finite(n),
     is.character(cvd)
   )
 
   # Run the optimizer
-  fit <- stats::optimize(costfun, target = target, n = n,
-                         colorspace = colorspace,
-                         cvd = match.arg(cvd), lower = 0, upper  = 1)
+  fit <- stats::optimize(
+    costfun,
+    target = target,
+    n = n,
+    colorspace = colorspace,
+    cvd = match.arg(cvd),
+    lower = 0,
+    upper = 1
+  )
 
   # Generate a new qualpal with the optimized cvd_severity value
-  qualpal(n = n, colorspace = colorspace, cvd = match.arg(cvd),
-          cvd_severity = fit$minimum)
+  qualpal(
+    n = n,
+    colorspace = colorspace,
+    cvd = match.arg(cvd),
+    cvd_severity = fit$minimum
+  )
 }
 
 
@@ -58,5 +83,5 @@ costfun <- function(x, target, n, colorspace, cvd) {
   fit <- qualpal(n, colorspace = colorspace, cvd = cvd, cvd_severity = x)
 
   # Return cost
-  (fit$min_de_DIN99d - target) ^ 2
+  (fit$min_de_DIN99d - target)^2
 }

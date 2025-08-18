@@ -6,10 +6,12 @@
 \usage{
 qualpal(
   n,
-  colorspace = "pretty",
-  cvd = c("protan", "deutan", "tritan"),
-  cvd_severity = 0,
-  n_threads
+  colorspace = list(h = c(0, 360), s = c(0.2, 0.5), l = c(0.6, 0.85)),
+  cvd = c(protan = 0, deutan = 0, tritan = 0),
+  cvd_severity,
+  bg = NULL,
+  metric = c("ciede2000", "din99d", "cie76"),
+  extend = NULL
 )
 }
 \arguments{
@@ -18,106 +20,99 @@ qualpal(
 \item{colorspace}{A color space to generate colors from. Can be any of the
 following:
 \itemize{
-  \item{A \code{\link{list}} with the following \emph{named} vectors,
-    each of length two, giving a range for each item.}{
-    \describe{
-      \item{\code{h}}{Hue, in the range [-360, 360]}
-      \item{\code{s}}{Saturation, in the range [0, 1]}
-      \item{\code{l}}{Lightness, in the range [0, 1]}
-    }
-  }
-  \item{A \code{\link{character}} vector of length one specifying one of
-    these predefined color spaces:}{
-    \describe{
-      \item{\code{pretty}}{
-        Tries to provide aesthetically pleasing,
-        but still distinct color palettes. Hue ranges from 0 to 360,
-        saturation from 0.1 to 0.5, and lightness from 0.5 to 0.85. This
-        palette is not suitable for high \code{n}}
-      \item{\code{pretty_dark}}{
-        Like \code{pretty} but darker. Hue ranges from 0 to 360, saturation
-        from 0.1 to 0.5, and lightness from 0.2 to 0.4.
-      }
-      \item{\code{rainbow}}{
-        Uses all hues, chromas, and most of the lightness range. Provides
-        distinct but not aesthetically pleasing colors.
-      }
-      \item{\code{pastels}}{
-        Pastel colors from the complete range of hues (0-360), with
-        saturation between 0.2 and 0.4, and lightness between 0.8 and 0.9.
-      }
-    }
-  }
-  \item{A \code{\link{matrix}} of colors from the sRGB color space, each
-    row representing a unique color.}
-  \item{A \code{\link{data.frame}} that can be converted to a matrix via
-    \link{data.matrix}}
+\item A \code{\link{list}} that describes a color space in either
+HSL or LCHab color space. In the first case (HSL), the list must
+contain the following \emph{named} vectors,
+each of length two, giving a range for each item.
+\describe{
+\item{\code{h}}{Hue, in range from -360 to 360}
+\item{\code{s}}{Saturation, in the range from 0 to 1}
+\item{\code{l}}{Lightness, in the range from 0 to 1}
+}
+In the second case (LCHab), the list must contain the following
+\emph{named} vectors,
+each of length two, giving a range for each item.
+\describe{
+\item{\code{h}}{Hue, in range from -360 to 360}
+\item{\code{c}}{Chroma, in the range from 0 to infinity}
+\item{\code{l}}{Lightness, in the range from 0 to 100}
+}
+In these cases, \code{qualpal()} will generate
+\item A \code{\link{character}} vector of length one in
+the form of "Source:Palette", where \emph{Domain} is the name of a
+source that provides a color palette, and \emph{Palette} is the name of
+a color palette from that source. See \code{\link[=list_palettes]{list_palettes()}} for
+available palettes.
+\item A matrix or data frame of RGB values (with values between 0 and
+1).
 }}
 
-\item{cvd}{Color vision deficiency adaptation. Use \code{cvd_severity}
-to set the severity of color vision deficiency to adapt to. Permissible
-values are \code{"protan", "deutan",} and \code{"tritan"}.}
+\item{cvd}{Color vision deficiency adaptation. This must be a named
+vector with names \code{protan}, \code{deutan}, and \code{tritan} and values
+between 0 and 1, where 0 means no adaptation and 1 means full
+adaptation.}
 
-\item{cvd_severity}{Severity of color vision deficiency to adapt to. Can take
-any value from 0, for normal vision (the default), and 1, for dichromatic
-vision.}
+\item{cvd_severity}{DEPRECATED. Use a named \code{cvd} vector instead, e.g.
+\code{c(protan = 0.5, deutan = 0.2, tritan = 0)}.}
 
-\item{n_threads}{Previously the number of threads to use, but this argument
-is now deprecated.}
+\item{bg}{Background color to consider (but not include) when
+generating the palette. This is useful to avoid colros that are too
+close to the background/canvas color. If \code{NULL} (the default), the
+background color is not considered at all. Any color that is convertable
+via \code{\link[grDevices]{col2rgb}} is acceptable, including hex colors.}
+
+\item{metric}{The color metric to use for the color distance
+matrix.}
+
+\item{extend}{A palette of colors to use as a fixed set of initial
+colors in the palette, which can be either a matrix or data frame
+of RGB values (with values between 0 and 1) or a character vector
+of hex colors (or any other format that's acceptable in
+\code{\link[grDevices:col2rgb]{grDevices::col2rgb()}}).}
 }
 \value{
 A list of class \code{qualpal} with the following
-  components.
-  \item{HSL}{
-    A matrix of the colors in the HSL color space.
-  }
-  \item{DIN99d}{
-    A matrix of the colors in the DIN99d color space (after power
-    transformations).
-  }
-  \item{RGB}{
-    A matrix of the colors in the sRGB color space.} \item{hex}{A
-    character vector of the colors in hex notation.} \item{de_DIN99d}{A
-    distance matrix of color differences according to delta E DIN99d.
-  }
-  \item{min_de_DIN99d}{
-    The smallest pairwise DIN99d color difference.
-  }
+components.
+\item{HSL}{
+A matrix of the colors in the HSL color space.
+}
+\item{RGB}{
+A matrix of the colors in the sRGB color space.
+}
+\item{hex}{A
+character vector of the colors in hex notation.
+}
+\item{de_DIN99d}{
+A distance matrix of color differences according to the
+metric used. The name is misleading, bu kept for
+backwards compatibility.
+}
+\item{hex}{
+A character vector of the colors in hex notation.
+}
+\item{min_de_DIN99d}{
+The minimum pairwise DIN99d color difference among all colors in the
+palette.
+}
 }
 \description{
-Given a color space or collection of colors, \code{qualpal()} projects
-these colors to the DIN99d color space, where it generates a color palette
-from the most visually distinct colors, optionally taking color vision
-deficiency into account.
+Given a collection of colors, \code{qualpal()} algorithmically
+tries to select to \code{n} most distinct colors from the provided
+input colors, optionally taking color vision deficiency into account.
 }
 \details{
-The function takes a color subspace in the HSL color space, where lightness
-and saturation take values from 0 to 1. Hue take values from -360 to 360,
-although negative values are brought to lie in the range \{0, 360\}; this
-behavior exists to enable color subspaces that span all hues being that the
-hue space is circular.
-
-The HSL color subspace that the user provides is projected into the DIN99d
-color space, which is approximately perceptually uniform, i.e. color
-difference is proportional to the euclidean distance between two colors. A
-distance matrix is computed and, as an additional step, is transformed using
-power transformations discovered by Huang 2015 in order to fine tune
-differences.
-
-\code{qualpal} then searches the distance matrix for the most
-distinct colors; it does this iteratively by first selecting a random set of
-colors and then iterates over each color, putting colors back into the total
-set and replaces it with a new color until it has gone through the whole
-range without changing any of the colors.
+The main idea is to compute a distance matrix from all the input colors, and
+then try to select the most distinct colors based on the color differences
+between them. It does this iteratively by first selecting the first \code{n}
+colors from the input colors, then iterates over the palette, putting colors
+back into the total set and replaces it with a new color until it has gone
+through the whole range without changing any of the colors.
 
 Optionally, \code{qualpal} can adapt palettes to cater to color vision
-deficiency (cvd). This is accomplished by taking the colors
-provided by the user and transforming them to colors that someone with cvd
-would see, that is, simulating cvd. qualpal then chooses colors from
+deficiency (CVD). This is accomplished by taking the colors
+provided by the user and transforming them to colors that someone with CVD
+would see, that is, simulating CVD qualpal then chooses colors from
 these new colors.
-
-\code{qualpal} currently only supports the sRGB color space with the D65
-white point reference.
 }
 \examples{
 # Generate 3 distinct colors from the default color space
@@ -126,13 +121,18 @@ qualpal(3)
 # Provide a custom color space
 qualpal(n = 3, list(h = c(35, 360), s = c(0.5, 0.7), l = c(0, 0.45)))
 
-qualpal(3, "pretty")
+qualpal(3, "ColorBrewer:Set2")
 
 # Adapt palette to deuteranopia
-qualpal(5, colorspace = "pretty_dark", cvd = "deutan", cvd_severity = 1)
+qualpal(5, "ColorBrewer:Dark2", cvd = c(deutan = 1))
 
 # Adapt palette to protanomaly with severity 0.4
-qualpal(8, colorspace = "pretty_dark", cvd = "protan", cvd_severity = 0.4)
+qualpal(8, cvd = c(protan = 0.4))
+
+# Generate and extend a palette with 3 colors, using the DIN99d
+# metric
+pal <- qualpal(3)
+qualpal(5, extend = pal$hex, metric = "din99d")
 
 \dontrun{
 # The range of hue cannot exceed 360
@@ -141,5 +141,5 @@ qualpal(3, list(h = c(-20, 360), s = c(0.5, 0.7), l = c(0, 0.45)))
 
 }
 \seealso{
-\code{\link{plot.qualpal}}, \code{\link{pairs.qualpal}}
+\code{\link[=plot.qualpal]{plot.qualpal()}}, \code{\link[=pairs.qualpal]{pairs.qualpal()}}, \code{\link[=list_palettes]{list_palettes()}}
 }

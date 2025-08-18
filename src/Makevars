@@ -1,2 +1,23 @@
-PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
-PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+PKG_CXXFLAGS =	-I../inst/include/ $(SHLIB_OPENMP_CXXFLAGS)
+PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS)
+
+CXX_STD = CXX17
+
+SOURCES = \
+	RcppExports.cpp \
+	qualpalr.cpp \
+	qualpal/analyze.cpp \
+	qualpal/color_difference.cpp \
+	qualpal/colors.cpp \
+	qualpal/cvd.cpp \
+	qualpal/farthest_points.cpp \
+	qualpal/palettes.cpp \
+	qualpal/qualpal.cpp \
+	qualpal/validation.cpp
+
+OBJECTS = $(SOURCES:.cpp=.o)
+
+all: $(SHLIB)
+
+clean:
+	@rm -f $(OBJECTS)

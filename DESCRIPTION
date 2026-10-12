@@ -1,6 +1,6 @@
 Package: qualpalr
 Title: Automatic Generation of Qualitative Color Palettes
-Version: 2.0.0
+Version: 2.1.0
 Authors@R: 
     person(
       "Johan",
@@ -23,15 +23,15 @@ RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 SystemRequirements: C++17
 Depends: R (>= 4.0.0)
-Imports: graphics, stats, utils, Rcpp
+Imports: graphics, stats, utils
 Suggests: randtoolbox (>= 1.17), testthat, knitr, rmarkdown, maps, rgl,
         spelling, covr
-LinkingTo: Rcpp (>= 0.12.9)
+LinkingTo: cpp11
 Language: en-US
 NeedsCompilation: yes
-Packaged: 2026-01-29 15:31:04 UTC; jola
+Packaged: 2026-10-12 08:37:19 UTC; jola
 Author: Johan Larsson [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-4029-5945>)
 Maintainer: Johan Larsson <johan@jolars.co>
 Repository: CRAN
-Date/Publication: 2026-01-29 17:10:07 UTC
+Date/Publication: 2026-10-12 09:40:08 UTC
